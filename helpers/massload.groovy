@@ -1,4 +1,4 @@
-package helpers
+package jenkins.deployment.helpers
 
 def executeMassload(type, filesMap, variables) {
 

@@ -47,7 +47,6 @@ node(target) {
         println 'We are going to wcbd from: ' + WCBDPath
 
         stage('Checkout') {
-            deleteDir()
             println "Building " + version + " for " + target + " buildType is: " + buildType
 
             checkout([$class   : 'SubversionSCM', locations: [
@@ -170,7 +169,7 @@ node(target) {
             }
         }
 
-        stage('Sync Node') {
+        stage('Sync Cluster') {
             // Synchronising deployed code from DMGR to all nodes in cluster one by one.
             String runMe = variablesArray.wasHome + '/bin/wsadmin.sh -lang jython -user ' \
                          + variablesArray.wasUser + ' -password ' + variablesArray.wasPassword \
@@ -184,6 +183,17 @@ node(target) {
                 sqlBackupRunner = sqlrunner.executeSQLs(sqlFiles, variablesArray)
             } else {
                 println sqlSkipMessage
+            }
+        }
+        stage('Sync httpd configs') {
+            dir(httpdConfDir){
+                def action = 'generate'
+                ant.httpdSync(variablesArray, target, action)
+            }
+        }
+        stage('Cleanups') {
+            dir(variablesArray.WS) {
+                deleteDir()
             }
         }
     }

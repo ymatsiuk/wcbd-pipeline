@@ -1,4 +1,4 @@
-package helpers
+package jenkins.deployment.helpers
 
 def executeSQLs(files, variables){
     if (files.size() <= 0){
